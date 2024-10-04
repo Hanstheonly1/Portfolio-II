@@ -54,6 +54,16 @@ async function start() {
                     print(ANSI.COLOR.YELLOW + "Language Menu:" + ANSI.RESET);
                     print("en - English");
                     print("no - Norsk");
+                    let languageChoice = "";
+                    languageChoice = await askQuestion("");
+                    if(languageChoice.toLowerCase() == "en")
+                    {
+                        language = DICTIONARY.en;
+                    }
+                    else if (languageChoice.toLowerCase() == "no")
+                    {
+                        language = DICTIONARY.no;
+                    }
                 }
                 else if(settingsAction == SETTINGS_CHOICES.SETTINGS_CHOICE_RULES)
                 {
@@ -190,6 +200,27 @@ function evaluateGameState() {
         }
 
         sum = 0;
+    }
+    
+    if(gameboard[1][1] == 1)
+    {
+        for (let i = 0; i < GAME_BOARD_SIZE; i++)
+        {
+            if ((gameboard[0][0] == 1 && gameboard [2][2] == 1)||(gameboard[0][2] == 1 && gameboard[2][0] == 1))
+            {
+                state = 3;
+            }
+        }
+    }
+    else if (gameboard[1][1] == -1)
+    {
+        for (let i = 0; i < GAME_BOARD_SIZE; i++)
+        {
+            if ((gameboard[0][0] == -1 && gameboard [2][2] == -1)||(gameboard[0][2] == -1 && gameboard[2][0] == -1))
+            {
+                state = -3;
+            }
+        }
     }
 
     let winner = state / 3;
