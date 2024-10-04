@@ -14,6 +14,11 @@ const MENU_CHOICES = {
     MENU_CHOICE_SHOW_SETTINGS: 2,
     MENU_CHOICE_EXIT_GAME: 3
 };
+const SETTINGS_CHOICES = {
+    SETTINGS_CHOICE_LANGUAGE: 1,
+    SETTINGS_CHOICE_RULES: 2,
+    SETTINGS_CHOICE_EXIT: 3
+};
 
 const NO_CHOICE = -1;
 
@@ -40,7 +45,41 @@ async function start() {
         if (chosenAction == MENU_CHOICES.MENU_CHOICE_START_GAME) {
             await runGame();
         } else if (chosenAction == MENU_CHOICES.MENU_CHOICE_SHOW_SETTINGS) {
-            ///TODO: Needs implementing
+            let settingsAction = NO_CHOICE;
+            settingsAction = await showSettingsMenu();
+
+            if(settingsAction == SETTINGS_CHOICES.SETTINGS_CHOICE_LANGUAGE)
+                {
+                    clearScreen();
+                    print(ANSI.COLOR.YELLOW + "Language Menu:" + ANSI.RESET);
+                    print("en - English");
+                    print("no - Norsk");
+                }
+                else if(settingsAction == SETTINGS_CHOICES.SETTINGS_CHOICE_RULES)
+                {
+                    clearScreen();
+                    print(ANSI.COLOR.YELLOW + "Rules:" + ANSI.RESET);
+                    print("Your Turn:\n" + 
+                        "When it is your turn, you can place your mark X or O at any of the open spaces by using the coordinate values.\n" + 
+                        "Remember to subtract by one compared to grid coordinates." + 
+                        "Example: I want to place my mark in the upper left corner.\n" + 
+                        "The input for this move is:"); 
+                    print(ANSI.COLOR.GREEN + "0 0" + ANSI.RESET);
+                    print("And not:");
+                    print(ANSI.COLOR.GREEN + "1 1" + ANSI.RESET);
+                    print("Invalid input will automatically cancel the move and give you a new question\n\n" + 
+                        "End Of The Game:\n" + 
+                        "The game is over when a player has three marks in a row.\n" + 
+                        "It can be horizontally, vertically or diagonally.\n"); 
+                    print(ANSI.COLOR.RED + "Exit To Main Menu" + ANSI.RESET);
+                    let input = NO_CHOICE;
+                    input = await askQuestion("");
+                    start();
+                }
+                else if(settingsAction == SETTINGS_CHOICES.SETTINGS_CHOICE_EXIT)
+                {
+                    start();
+                }
         } else if (chosenAction == MENU_CHOICES.MENU_CHOICE_EXIT_GAME) {
             clearScreen();
             process.exit();
@@ -216,7 +255,7 @@ function showGameBoardWithCurrentState() {
             else if (cell > 0) {
                 rowOutput += "X ";
             } else {
-                rowOutput += "O  ";
+                rowOutput += "O ";
             }
         }
 
@@ -248,6 +287,31 @@ function createGameBoard() {
 function clearScreen() {
     console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME, ANSI.RESET);
 }
+
+async function showSettingsMenu()
+{
+    let menuInput = -1;
+    let valid = false;
+
+    clearScreen();
+    print(ANSI.COLOR.YELLOW + "Settings Menu:" + ANSI.RESET)
+    print("1. Language");
+    print("2. Rules");
+    print("3. Exit To Main Menu");
+
+    while (!valid)
+    {
+        menuInput = await askQuestion("");
+        if([SETTINGS_CHOICES.SETTINGS_CHOICE_LANGUAGE, SETTINGS_CHOICES.SETTINGS_CHOICE_RULES, SETTINGS_CHOICES.SETTINGS_CHOICE_EXIT])
+        {
+            valid = true;
+        }
+    }
+
+    return menuInput;
+}
+
+    
 
 
 //#endregion
