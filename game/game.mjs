@@ -192,6 +192,8 @@ function changeCurrentPlayer() {
 function evaluateGameState() {
     let sum = 0;
     let state = 0;
+    let checkDraw = true;
+    let numberOfSpacesChecked = 0;
 
     for (let row = 0; row < GAME_BOARD_SIZE; row++) {
 
@@ -238,10 +240,32 @@ function evaluateGameState() {
             }
         }
     }
+    
+    while(checkDraw)
+    {
+        for (let row = 0; row < GAME_BOARD_SIZE; row++)
+        {
+            for(let col = 0; col < GAME_BOARD_SIZE; col++)
+            {
+                if (gameboard[row][col] === language.BOARD_EMPTY || gameboard[row][col] === 0)
+                {
+                    print(language.GAME_STILL_PLAYING);
+                    numberOfSpacesChecked++
+                }
+            }
+        }
+        checkDraw = false;
+        if (numberOfSpacesChecked == 0)
+        {
+            print(language.IT_IS_A_DRAW);
+        }
+        numberOfSpacesChecked = 0;
+    }
 
     let winner = state / 3;
     return winner;
 }
+
 
 function updateGameBoardState(move) {
     const ROW_ID = 0;
@@ -292,8 +316,10 @@ function showHUD() {
 }
 
 function showGameBoardWithCurrentState() {
+    print(language.BOARD_TOP);
     for (let currentRow = 0; currentRow < GAME_BOARD_SIZE; currentRow++) {
         let rowOutput = "";
+        rowOutput += language.BOARD_MID_EDGE;
         for (let currentCol = 0; currentCol < GAME_BOARD_SIZE; currentCol++) {
             let cell = gameboard[currentRow][currentCol];
             if (cell == 0) {
@@ -305,9 +331,14 @@ function showGameBoardWithCurrentState() {
                 rowOutput += language.OUTPUT_O;
             }
         }
-
         print(rowOutput);
+
+        if (currentRow < GAME_BOARD_SIZE -1)
+        {
+            print(language.BOARD_MID);
+        }
     }
+    print(language.BOARD_BOTTOM);
 }
 
 function initializeGame() {
