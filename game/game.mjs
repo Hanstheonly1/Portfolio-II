@@ -51,16 +51,16 @@ async function start() {
             if(settingsAction == SETTINGS_CHOICES.SETTINGS_CHOICE_LANGUAGE)
                 {
                     clearScreen();
-                    print(ANSI.COLOR.YELLOW + "Language Menu:" + ANSI.RESET);
-                    print("en - English");
-                    print("no - Norsk");
+                    print(ANSI.COLOR.YELLOW + language.LANGUAGE_MENU + ANSI.RESET);
+                    print(language.LANGUAGE_ENGLISH);
+                    print(language.LANGUAGE_NORSK);
                     let languageChoice = "";
                     languageChoice = await askQuestion("");
-                    if(languageChoice.toLowerCase() == "en")
+                    if(languageChoice.toLowerCase() == language.LANGUAGE_CHOICE_EN)
                     {
                         language = DICTIONARY.en;
                     }
-                    else if (languageChoice.toLowerCase() == "no")
+                    else if (languageChoice.toLowerCase() == language.LANGUAGE_CHOICE_NO)
                     {
                         language = DICTIONARY.no;
                     }
@@ -68,20 +68,13 @@ async function start() {
                 else if(settingsAction == SETTINGS_CHOICES.SETTINGS_CHOICE_RULES)
                 {
                     clearScreen();
-                    print(ANSI.COLOR.YELLOW + "Rules:" + ANSI.RESET);
-                    print("Your Turn:\n" + 
-                        "When it is your turn, you can place your mark X or O at any of the open spaces by using the coordinate values.\n" + 
-                        "Remember to subtract by one compared to grid coordinates." + 
-                        "Example: I want to place my mark in the upper left corner.\n" + 
-                        "The input for this move is:"); 
-                    print(ANSI.COLOR.GREEN + "0 0" + ANSI.RESET);
-                    print("And not:");
-                    print(ANSI.COLOR.GREEN + "1 1" + ANSI.RESET);
-                    print("Invalid input will automatically cancel the move and give you a new question\n\n" + 
-                        "End Of The Game:\n" + 
-                        "The game is over when a player has three marks in a row.\n" + 
-                        "It can be horizontally, vertically or diagonally.\n"); 
-                    print(ANSI.COLOR.RED + "Exit To Main Menu" + ANSI.RESET);
+                    print(ANSI.COLOR.YELLOW + language.RULES + ANSI.RESET);
+                    print(language.YOUR_TURN_EXPLANATION); 
+                    print(ANSI.COLOR.GREEN + language.EXAMPLE_1 + ANSI.RESET);
+                    print(language.AND_NOT);
+                    print(ANSI.COLOR.GREEN + language.EXAMPLE_2 + ANSI.RESET);
+                    print(language.END_GAME_EXPLANATION); 
+                    print(ANSI.COLOR.RED + language.EXIT_TO_MAIN_MENU + ANSI.RESET);
                     let input = NO_CHOICE;
                     input = await askQuestion("");
                     start();
@@ -117,10 +110,10 @@ async function showMenu() {
     while (!validChoice) {
         // Display our menu to the player.
         clearScreen();
-        print(ANSI.COLOR.YELLOW + "MENU" + ANSI.RESET);
-        print("1. Play Game");
-        print("2. Settings");
-        print("3. Exit Game");
+        print(ANSI.COLOR.YELLOW + language.MENU_TEXT + ANSI.RESET);
+        print(language.MENU_PLAY_GAME);
+        print(language.MENU_SETTINGS);
+        print(language.MENU_EXIT_GAME);
 
         // Wait for the choice.
         choice = await askQuestion("");
@@ -132,6 +125,29 @@ async function showMenu() {
     }
 
     return choice;
+}
+
+async function showSettingsMenu()
+{
+    let menuInput = -1;
+    let valid = false;
+
+    clearScreen();
+    print(ANSI.COLOR.YELLOW + language.SETTINGS_MENU + ANSI.RESET)
+    print(language.SETTINGS_LANGUAGE);
+    print(language.SETTINGS_RULES);
+    print(language.SETTINGS_EXIT);
+
+    while (!valid)
+    {
+        menuInput = await askQuestion("");
+        if([SETTINGS_CHOICES.SETTINGS_CHOICE_LANGUAGE, SETTINGS_CHOICES.SETTINGS_CHOICE_RULES, SETTINGS_CHOICES.SETTINGS_CHOICE_EXIT])
+        {
+            valid = true;
+        }
+    }
+
+    return menuInput;
 }
 
 async function playGame() {
@@ -164,9 +180,9 @@ async function askWantToPlayAgain() {
 function showGameSummary(outcome) {
     clearScreen();
     let winningPlayer = (outcome > 0) ? 1 : 2;
-    print("Winner is player " + winningPlayer);
+    print(language.WINNER_IS + winningPlayer);
     showGameBoardWithCurrentState();
-    print("GAME OVER");
+    print(language.GAME_OVER);
 }
 
 function changeCurrentPlayer() {
@@ -236,8 +252,8 @@ function updateGameBoardState(move) {
 async function getGameMoveFromtCurrentPlayer() {
     let position = null;
     do {
-        let rawInput = await askQuestion("Place your mark at: ");
-        position = rawInput.split(" ");
+        let rawInput = await askQuestion(language.PLACE_YOUR_MARK_AT);
+        position = rawInput.split(language.SPLIT);
     } while (isValidPositionOnBoard(position) == false)
 
     return position
@@ -268,11 +284,11 @@ function isValidPositionOnBoard(position) {
 }
 
 function showHUD() {
-    let playerDescription = "one";
+    let playerDescription = language.PLAYER_DESCRIPTION_ONE;
     if (PLAYER_2 == currentPlayer) {
-        playerDescription = "two";
+        playerDescription = language.PLAYER_DESCRIPTION_TWO;
     }
-    print("Player " + playerDescription + " it is your turn");
+    print(language.PLAYER + playerDescription + language.YOUR_TURN);
 }
 
 function showGameBoardWithCurrentState() {
@@ -281,12 +297,12 @@ function showGameBoardWithCurrentState() {
         for (let currentCol = 0; currentCol < GAME_BOARD_SIZE; currentCol++) {
             let cell = gameboard[currentRow][currentCol];
             if (cell == 0) {
-                rowOutput += "_ ";
+                rowOutput += language.ROW_OUTPUT;
             }
             else if (cell > 0) {
-                rowOutput += "X ";
+                rowOutput += language.OUTPUT_X;
             } else {
-                rowOutput += "O ";
+                rowOutput += language.OUTPUT_O;
             }
         }
 
@@ -318,32 +334,6 @@ function createGameBoard() {
 function clearScreen() {
     console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME, ANSI.RESET);
 }
-
-async function showSettingsMenu()
-{
-    let menuInput = -1;
-    let valid = false;
-
-    clearScreen();
-    print(ANSI.COLOR.YELLOW + "Settings Menu:" + ANSI.RESET)
-    print("1. Language");
-    print("2. Rules");
-    print("3. Exit To Main Menu");
-
-    while (!valid)
-    {
-        menuInput = await askQuestion("");
-        if([SETTINGS_CHOICES.SETTINGS_CHOICE_LANGUAGE, SETTINGS_CHOICES.SETTINGS_CHOICE_RULES, SETTINGS_CHOICES.SETTINGS_CHOICE_EXIT])
-        {
-            valid = true;
-        }
-    }
-
-    return menuInput;
-}
-
-    
-
 
 //#endregion
 
